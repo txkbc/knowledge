@@ -196,3 +196,72 @@ PASS
   - ctx，cancel := context。WithCancel(context.Background())
 - 当前Context被取消时，基于他的子context都会被取消
 - 接收取消通知 <-ctc.Done
+
+**sync.Pool**
+1. sync.Pool对象获取
+	- 尝试从石油对象获取
+	- 私有对象不存在，尝试从当前Processor的共享池获取
+	- 如果当前Processor共享池也是空的，那么久尝试去其他Processor的共享池获取
+	- 如果所有子池都是空的，最后就用用户指定的New函数产生一个新的对象返回
+2. sync.Pool对象放回
+	- 如果私有对象不存在则保存为私有对象
+	- 如果私有对象存在，放入当前Processor子池的共享中
+3. sync.Pool对象的生命周期
+	- GC会清除sync.pool缓存的对象
+	- 对象的缓存有效期为下一次GC之前
+4. sync.Pool总结
+	- 适合于通过复用，降低复杂对象的创建和GC代价
+	- 协程安全，会有所开销
+	- 生命周期受GC影响，不适合做连接池等，需要自己管理生命周期的资源的池化
+
+**单元测试**
+- Fail，Error：该测试失败，该测试继续执行，其他测试继续执行
+- FailNow，Fatal：该测试失败，该测试中止，其他测试继续执行
+- 代码覆盖率： go test -v cover
+- 断言：https://github.com/stretchr/testify
+
+**Benchmark**
+用于性能测试——运行时间
+```go
+//方法名以Benchmark开头
+func BenchmarkConcatStringByAdd(b *testing.B){
+	//与性能测试无关的代码
+	b.ResetTimer()
+	for i:=0;i<b.N ;i++  {
+		//测试代码
+	}
+	b.StopTimer()
+	//与性能测试无关的代码
+}
+```
+
+**BDD（Behavior Driven Development)**
+测试相关
+- 项目网站：https://github.com/smartystreets/goconvey
+- 安装： go get -u github.com/smartystreets/goconvey/convey
+- 启动WEB UI : $GOPATH/bin/goconvey
+
+
+**反射编程**
+reflect.TypeOf     vs    reflect.ValueOf
+- reflect.TypeOf返回类型(reflect.Type)
+- reflect.ValueOf返回值(reflect.Value)
+- 可以从reflect.Value获得类型
+- 通过kind来判断类型
+- Reflect.Type和Reflect.Value都有FieldByName方法，注意他们的区别
+
+**DeepEqual**
+一般的切片和map不能相互比较，只能和nil比较
+
+
+
+
+
+
+
+
+
+
+
+
+
