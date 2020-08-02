@@ -45,6 +45,154 @@ func main(arg []string)
 1. GO语言不允许隐式类型转换
 2. 别名和原有类型也不能进行隐式类型转换
 
+**&^**按位置零
+```
+1 &^ 0 -- 1
+1 &^ 1 -- 0
+0 &^ 1 -- 0
+0 &^ 0 -- 0
+```
+## 3.1 Map
+
+**Map与工厂模式**
+- Map的value可以是一个方法
+- 与Go的Dock type接口方式一起，可以方便的实现单一方法对象的工厂模式
+
+```go
+func TestMapWithFuncValue(t *testing.T){
+	m := map[int]func(op int) int{}
+	m[1]=func(op int) int {return op}
+	m[2]=func(op int) int {return op*op}
+	m[3]=func(op int) int {return op*op*op}
+	m[4]=func(op int) int {return 0}
+	t.Log(m[1](2),m[2](2),m[3](2),m[4](2))
+}
+/*
+=== RUN   TestMapWithFuncValue
+    my_test.go:41: 2 4 8 0
+--- PASS: TestMapWithFuncValue (0.00s)
+PASS
+*/
+
+```
+**实现Set**
+Go的内置集合中没有Set实现，可以map[type]bool
+1. 元素的唯一性
+2. 基本操作
+	- 添加元素
+	- 判断元素是否存在
+	- 删除元素
+	- 元素个数
+```go
+func TestMapforSet(t *testing.T){
+	mySet := map[int]bool{}
+	mySet[1] = true
+	if mySet[1]{
+		t.Log("1在set中")
+	}else{
+		t.Log("1不在set中")
+	}
+	if mySet[3]{
+		t.Log("3在set中")
+	}else{
+		t.Log("3不在set中")
+	}
+}
+/*
+=== RUN   TestMapforSet
+    my_test.go:48: 1在set中
+    my_test.go:55: 3不在set中
+--- PASS: TestMapforSet (0.00s)
+PASS
+*/
+```
+
+## 3.2 字符串
+1. string是数据类型，不是应用或指针类型
+2. string是只读的byte slice，len函数可以返回它所包含的byte数
+3. string的byte数组可以存放任何数据
+
+**Unicode UTF-8**
+1. Unicode是一种字符集(code point)
+2. UTF-8是Unicode的存储实现(转换为字节序列的规则)
+
+**字符编码**
+| 字符          | “中“             |
+| ------------- | ---------------- |
+| Unicode       | 0x4E2D           |
+| UTF-8         | 0xE4B8AD         |
+| string/[]byte | [0xE4,0xB8,0xAD] |
+
+
+## 3.3 数组和切片
+
+
+# 4 函数
+
+**与其他主要编程语言的差异**
+1. 可以有多个返回值
+2. 所有参数都是值传递：slice，map，channel会有传递引用的错觉
+3. 函数可以作为变量的值
+4. 函数可以作为参数和返回值
+
+## 4.1 函数的包装(装饰模式)
+```go
+func timeSpent(inner func(op int ) int) func(op int) int{
+	return func(n int )int {
+		start := time.Now()
+		ret := inner(n)
+		fmt.Println("time spent:",time.Since(start).Seconds())
+		return ret
+	}
+}
+
+func slowFun(opt int) int{
+	time.Sleep(time.Second*1)
+	return opt
+}
+
+func TestFn(t *testing.T){
+	tsSF := timeSpent(slowFun)
+	t.Log(tsSF(10))
+}
+
+/*
+=== RUN   TestFn
+time spent: 1.0000404
+    my1_test.go:30: 10
+--- PASS: TestFn (1.00s)
+PASS
+
+*/
+```
+
+## 4.2 defer函数
+
+
+## 4.3 init方法
+- 在main被执行前，所有依赖的package的init方法都会被执行
+- 不同包的init函数按照导入得依赖关系决定执行顺序
+- 每个包可以有多个init函数
+- 报的每个源文件也可以有多个init函数，这点比较特殊
+
+
+# 5 面向对象
 
 
 
+
+
+# 6 Other
+
+**channle的关闭**
+- 向关闭的channel发送数据，会导致panic
+- v,ok <- ch；ok为boo值，true表示正常接受，false表示通道关闭
+- 所有的channel接收者都会在channel关闭时，立刻从阻塞等待中返回且上述ok值为false。这个广播机制常被利用，进行向多个订阅者同时发送信号。如：退出信号
+
+**Context**
+
+- 根Context：通过context.Background()创建
+- 子Context：context.WithCancel(parebtContext)创建
+  - ctx，cancel := context。WithCancel(context.Background())
+- 当前Context被取消时，基于他的子context都会被取消
+- 接收取消通知 <-ctc.Done
