@@ -284,9 +284,16 @@ reflect.TypeOf     vs    reflect.ValueOf
 
 
 
+**性能分析工具**
+1. 准备工作
+- 安装 graphviz： brew install graphviz
+- 将$GOPATH/bin 加入$PATH
+- 安装go-torch
 
-
-
+**通过HTTP方式输出Profile**
+- 简单，适合于持续性运行的应用
+- 在应用程序中导入 import _ "net/http/pprof",并启动http server即可
+- http://<host>:port/debug/pprof
 
 
 
