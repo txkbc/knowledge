@@ -27,16 +27,20 @@ func main() {
    fmt.Println("Hello World!")
 }
 ```
+
 **3. 应用程序入口**
 - 必须是main包
 - package main
 - 必须是main方法
 - func main()
 - 文件名不一定是main.go
+
 **4. 退出返回值**
 - Go中main函数不支持任何返回值
 - 通过os.Exit来返回状态
+
 **5. 获取命令行参数**
+
 - main 函数不支持传入参数
 func main(arg []string)
 - 在程序中直接通过 os.Args 获取命令行参数
@@ -46,11 +50,18 @@ func main(arg []string)
 2. 别名和原有类型也不能进行隐式类型转换
 
 **&^**按位置零
-```
+```C
 1 &^ 0 -- 1
 1 &^ 1 -- 0
 0 &^ 1 -- 0
 0 &^ 0 -- 0
+
+/*
+1、如果右侧是0，则左侧数保持不变
+2、如果右侧是1，则左侧数一定清零
+3、功能同a&(^b)相同
+4、如果左侧是变量，也等同于：
+*/
 ```
 ## 3.1 Map
 
@@ -167,6 +178,8 @@ PASS
 ```
 
 ## 4.2 defer函数
+
+等待调用方法执行完了再执行。
 
 
 ## 4.3 init方法
@@ -297,10 +310,18 @@ reflect.TypeOf     vs    reflect.ValueOf
 
 
 
+**Chaos Engineering**
+- 如果问题经常发生就会学习和思考解决它的方法
 
 
+**相关开源项目**
+- https://github.com/Netflix/chaosmonkey
+- https://github.com/easierway/service_decorators/blob/master/README.md
 
-
+**图书推荐**
+- GO程序设计语言
+- 面向模式的软件架构（模式系统）
+- 计算机程序的构造和解释
 
 
 
